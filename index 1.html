@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mapa de Iniciativas - Debug</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { width: 100%; height: 100vh; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiYXp1bGFydGljbyIsImEiOiJjbWRkdzNwaDQwOTM0MmxuM3BzaTR2cmFlIn0.MNgBs36f3vX7syVEiS727g';
+
+  const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v11',
+    center: [-71.5429, -35.6751],
+    zoom: 4
+  });
+
+  map.on('load', () => {
+    map.addSource('regiones-chile', {
+      type: 'vector',
+      url: 'mapbox://azulartico.cmddycg7524611mlkndun5g74-5drn9'
+    });
+
+    map.addLayer({
+      id: 'puntos-regiones',
+      type: 'circle',
+      source: 'regiones-chile',
+      'source-layer': 'Chile_prueba',
+      paint: {
+        'circle-color': [
+          'interpolate',
+          ['linear'],
+          ['get', 'casos'],
+          1, '#C3B7F5',
+          5, '#A07DF0',
+          10, '#7134E0'
+        ],
+        'circle-radius': [
+          'interpolate',
+          ['linear'],
+          ['get', 'casos'],
+          1, 6,
+          10, 20
+        ],
+        'circle-opacity': 0.8,
+        'circle-stroke-width': 1,
+        'circle-stroke-color': '#ffffff'
+      }
+    });
+
+    map.on('click', 'puntos-regiones', (e) => {
+      const props = e.features[0].properties;
+      alert(JSON.stringify(props, null, 2));
+    });
+
+    map.on('mouseenter', 'puntos-regiones', () => {
+      map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave', 'puntos-regiones', () => {
+      map.getCanvas().style.cursor = '';
+    });
+  });
+</script>
+
+</body>
+</html>
